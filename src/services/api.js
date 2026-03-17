@@ -1,11 +1,20 @@
 import axios from 'axios';
 
 const envBaseURL = import.meta.env.VITE_API_BASE_URL?.trim();
+const normalizeBaseURL = (value) => {
+  if (!value) {
+    return value;
+  }
+
+  const trimmed = value.replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
 const isLocalBrowser =
   typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const shouldUseLocalApi =
   import.meta.env.DEV && isLocalBrowser && import.meta.env.VITE_USE_REMOTE_API !== 'true';
-const baseURL = shouldUseLocalApi ? '/api' : envBaseURL || '/api';
+const baseURL = shouldUseLocalApi ? '/api' : normalizeBaseURL(envBaseURL) || '/api';
 const TOKEN_KEY = 'ccp_token';
 
 export const api = axios.create({
